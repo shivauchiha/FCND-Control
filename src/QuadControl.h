@@ -48,4 +48,11 @@ public:
 
   // integral control
   float integratedAltitudeError;
+
+  //new variables
+  float arm_length_parameter;
+  float kappa_parameter;
+  float ixx;
+  float iyy;
+  float izz;
 };
