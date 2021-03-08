@@ -141,10 +141,10 @@ V3F QuadControl::RollPitchControl(V3F accelCmd, Quaternion<float> attitude, floa
   {
   float accel = -collThrustCmd / mass;
   float b_x = R(0,2);
-  float b_x_error = ((accelCmd.x)/accel) - b_x;
+  float b_x_error = CONSTRAIN(((accelCmd.x)/accel),-maxTiltAngle, maxTiltAngle) - b_x;
   float b_x_p_term = kpBank*b_x_error;
   float b_y = R(1,2);
-  float b_y_error = ((accelCmd.x)/accel) - b_y;
+  float b_y_error = CONSTRAIN(((accelCmd.y)/accel),-maxTiltAngle, maxTiltAngle) - b_y;
   float b_y_p_term = kpBank*b_y_error;
   pqrCmd.x = (R(1,0) * b_x_p_term - R(0,0) * b_y_p_term) / R(2,2);
   pqrCmd.y = (R(1,1) * b_x_p_term - R(0,1) * b_y_p_term) / R(2,2);
@@ -200,7 +200,7 @@ float QuadControl::AltitudeControl(float posZCmd, float velZCmd, float posZ, flo
   u_1_bar = CONSTRAIN(u_1_bar,-maxAscentRate/dt,maxDescentRate/dt);
   thrust = -1*mass*(u_1_bar - 9.8f)/b_z;
   
-
+   
 
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
@@ -247,6 +247,7 @@ V3F QuadControl::LateralPositionControl(V3F posCmd, V3F velCmd, V3F pos, V3F vel
   accelCmd.x = CONSTRAIN(accelCmd.x,-maxAccelXY,maxAccelXY);
   accelCmd.y = CONSTRAIN(accelCmd.y,-maxAccelXY,maxAccelXY);
   
+ 
   
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
@@ -268,7 +269,26 @@ float QuadControl::YawControl(float yawCmd, float yaw)
 
   float yawRateCmd=0;
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+  if(yawCmd<0)
+  {
+    yawCmd = fmodf(yawCmd,-2.f*3.14);
+  }
+  else
+  {
+    yawCmd = fmodf(yawCmd,2.f*3.14);
+  }
+  float psi_err = yawCmd - yaw;
+  
+  if ( psi_err > F_PI ) {
+      psi_err = psi_err - 2.f * F_PI;
+    } 
+    if ( psi_err < -F_PI ) {
+      psi_err = psi_err + 2.f * F_PI;
+    }
 
+
+  yawRateCmd = kpYaw* psi_err;
+  
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
