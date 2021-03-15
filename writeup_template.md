@@ -36,7 +36,7 @@ The job of this function is to provide appropriate momentum cmds for the drone t
 
 
 
-As you can see the cmds are a function of desired pitch , roll and yaw rates.
+As you can see the cmds are a function of desired pitch , roll and yaw rates.The moments of inertia are calculated based on mass and form factor of the drone.[List of moments of inertia](https://en.wikipedia.org/wiki/List_of_moments_of_inertia)
  
 
 #### 2. Set your current local position
