@@ -31,10 +31,10 @@ You're reading it! Below I describe how I addressed each rubric point and where 
 #### 1. Implemented body rate control in C++.
 The job of this function is to provide appropriate momentum cmds for the drone to perform to achieve control objective.These momentum cmd follow the control law
 
-'''
+
 	(pqrCmd-pqr)*Inertia*kpPQR;
 
-'''
+
 
 As you can see the cmds are a function of desired pitch , roll and yaw rates.
  
