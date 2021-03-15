@@ -51,13 +51,20 @@ This is the function that generates roll and pitch rates to follow based on desi
 Here R elements are related to rotation matrix that helps in conversion between global and drone frame.b_x_p and b_y_p are related to function of commanded acceleration in global x-y frame.
 Care is also taken in such a way the tilt angle generated does not exceed drones capacity.
 
-#### 3. Set grid start position from local position
-Here we use the local position acquired in previous step and adjust it using offset so it is sort of transformed to the grid reference frame.Then this is passed as start position to A* algorithms. 
+#### 3. Implement altitude controller in C++.
+This part of the controller is responsible for maintain the desired altitude of the drone.This takes in desired velocity and position along z axis and generates required thrust. This controller follows the below control law.
 
-#### 4. Set grid goal position from geodetic coords
-Here the hardcoded goal position is replaced by global_to_local() api which is fed with destination lat,lon acquired from user . check line 152.
+	u_1_bar = p_term + d_term + i_term +accelZCmd;
 
-Note:- Not all lat , lon values results in successful path find . I would like your advice in properly selecting lat , lon as goal position. Despite experimentation have still not figured out . But for one goal , I found by chance which validates all of the code logic.
+This is basically a feed forward PID controller. P_term is related to position error,d_term is related to velocity error and i_term is related to accumulated position error. This control is translated into thrust by following equation.
+ 
+	thrust = -1*mass*(u_1_bar - 9.8f)/b_z;
+ 
+
+#### 4. Implement lateral position control in C++.
+This controller is responsible for generating desired accelerations in global xy co-ordinate system based on desired position and velocity. The control law is a basic PD feed forward controller.A checking condition is also implemented to make sure the cmd_velocity is within the technical capabilites of the drone. Following control law is followed.
+
+	accelCmd = (kpPosXY*pos_error)+(kpVelXY*vel_error)+accelCmdFF;
 
 #### 5. Modify A* to include diagonal motion (or replace A* altogether)
 Here changes were made to Action enum class to add diagonal motion and the necessary checks were added to valid_actions. check line 54 and line 91.
