@@ -66,11 +66,21 @@ This controller is responsible for generating desired accelerations in global xy
 
 	accelCmd = (kpPosXY*pos_error)+(kpVelXY*vel_error)+accelCmdFF;
 
-#### 5. Modify A* to include diagonal motion (or replace A* altogether)
-Here changes were made to Action enum class to add diagonal motion and the necessary checks were added to valid_actions. check line 54 and line 91.
+#### 5. Implement yaw control in C++.
+This is a simple P controller that controls the yaw of drone.It outputs desired yaw rates . Limit checking and efficient direction of turn conditions are implemented. The following control law is implemented.
 
-#### 6. Cull waypoints 
-Here I used collinearity test to prune paths . But in future I hope to add voxcel based planning and bresenham based pruning algorithm.
+    
+        yawRateCmd = kpYaw* psi_err;
+
+#### 6. Implement calculating the motor commands given commanded thrust and moments in C++. 
+This part of the controller takes in commanded thrust and desired momentum command and generates  the desired thrust of the motor. The equation is based on following dynamics of the drone.
+
+        float arm = L / sqrt(2.f);
+  	cmd.desiredThrustsN[0] = 1/4.f * (collThrustCmd + (momentCmd.x / arm) + (momentCmd.y / arm) + (-momentCmd.z / kappa)); 
+  	cmd.desiredThrustsN[1] = 1/4.f * (collThrustCmd - (momentCmd.x / arm) + (momentCmd.y / arm) - (-momentCmd.z / kappa)); 
+  	cmd.desiredThrustsN[2] = 1/4.f * (collThrustCmd + (momentCmd.x / arm) - (momentCmd.y / arm) - (-momentCmd.z / kappa));
+  	cmd.desiredThrustsN[3] = 1/4.f * (collThrustCmd - (momentCmd.x / arm) - (momentCmd.y / arm) + (-momentCmd.z / kappa));
+
 
 
 
