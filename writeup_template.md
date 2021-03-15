@@ -26,7 +26,7 @@
 You're reading it! Below I describe how I addressed each rubric point and where in my code each point is handled.
 
 
-### Implementing Your Path Planning Algorithm
+### Implementing Your Control Algorithm
 
 #### 1. Implemented body rate control in C++.
 The job of this function is to provide appropriate momentum cmds for the drone to perform to achieve control objective.These momentum cmd follow the control law
@@ -39,8 +39,17 @@ The job of this function is to provide appropriate momentum cmds for the drone t
 As you can see the cmds are a function of desired pitch , roll and yaw rates.The moments of inertia are calculated based on mass and form factor of the drone.[List of moments of inertia](https://en.wikipedia.org/wiki/List_of_moments_of_inertia)
  
 
-#### 2. Set your current local position
-Next we want the path planning to start from your current position. This position should preferably be in NED co-ordinates.This current local position is acquired by passing self.global_position attribute to the gloabl_to_local() api of udacidrone.This gives the drones current location in local co-ordinates with respect to global home.
+#### 2. Implement roll pitch control in C++.
+This is the function that generates roll and pitch rates to follow based on desired global x,y acceleration and thrust.It takes in the drones attitude to calculate desired error and applies it to the following control law.
+
+
+	pqrCmd.x = (R(1,0) * b_x_p_term - R(0,0) * b_y_p_term) / R(2,2);
+  	pqrCmd.y = (R(1,1) * b_x_p_term - R(0,1) * b_y_p_term) / R(2,2);
+  	pqrCmd.z = 0;  
+
+
+Here R elements are related to rotation matrix that helps in conversion between global and drone frame.b_x_p and b_y_p are related to function of commanded acceleration in global x-y frame.
+Care is also taken in such a way the tilt angle generated does not exceed drones capacity.
 
 #### 3. Set grid start position from local position
 Here we use the local position acquired in previous step and adjust it using offset so it is sort of transformed to the grid reference frame.Then this is passed as start position to A* algorithms. 
